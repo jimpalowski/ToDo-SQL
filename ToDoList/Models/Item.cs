@@ -26,36 +26,6 @@ namespace ToDoList.Models
       _description = newDescription;
     }
 
-    public string GetDate()
-    {
-      return _date;
-    }
-
-    public void SetDate(string newDate)
-    {
-      _date = newDate;
-    }
-
-    public string GetMemo()
-    {
-      return _memo;
-    }
-
-    public void SetMemo(string newMemo)
-    {
-      _memo = newMemo;
-    }
-
-    public string GetImportance()
-    {
-      return _importance;
-    }
-
-    public void SetImportance(string newImportance)
-    {
-      _importance = newImportance;
-    }
-
     public int GetId()
     {
       return _id + 1;
@@ -63,7 +33,8 @@ namespace ToDoList.Models
 
     public static List<Item> GetAll()
     {
-        List<Item> allItems = new List<Item> {};
+        // List<Item> allItems = new List<Item> {new Item("test item")}; //fail test since it's not grabbing empty list
+        List<Item> allItems = new List<Item> {}; //passed with list from database ToDo
         MySqlConnection conn = DB.Connection();
         conn.Open();
         MySqlCommand cmd = conn.CreateCommand() as MySqlCommand;
@@ -83,21 +54,38 @@ namespace ToDoList.Models
         }
         return allItems;
     }
+    public static void DeleteAll()
+       {
+           MySqlConnection conn = DB.Connection();
+           conn.Open();
 
-    public static Item Find(int searchId)
-    {
-      return _instances[searchId-1];
-    }
+           var cmd = conn.CreateCommand() as MySqlCommand;
+           cmd.CommandText = @"DELETE FROM items;";
 
-    public void Save()
-    {
-      _instances.Add(this);
-    }
+           cmd.ExecuteNonQuery();
 
-    public static void ClearAll()
-    {
-      _instances.Clear();
-    }
+           conn.Close();
+           if (conn != null)
+           {
+               conn.Dispose();
+           }
+      }
+    //
+    //
+    // public static Item Find(int searchId)
+    // {
+    //   return _instances[searchId-1];
+    // }
+    //
+    // public void Save()
+    // {
+    //   _instances.Add(this);
+    // }
+    //
+    // public static void ClearAll()
+    // {
+    //   _instances.Clear();
+    // }
 
   }
 }
