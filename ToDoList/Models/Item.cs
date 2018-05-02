@@ -16,6 +16,20 @@ namespace ToDoList.Models
      _description = Description;
    }
 
+   public override bool Equals(System.Object otherItem)
+    {
+       if (!(otherItem is Item))
+       {
+         return false;
+       }
+       else
+       {
+         Item newItem = (Item) otherItem;
+         bool idEquality = (this.GetId() == newItem.GetId());
+         bool descriptionEquality = (this.GetDescription() == newItem.GetDescription());
+         return (idEquality && descriptionEquality);
+       }
+    }
     public string GetDescription()
     {
       return _description;
@@ -77,15 +91,27 @@ namespace ToDoList.Models
     //   return _instances[searchId-1];
     // }
     //
-    // public void Save()
-    // {
-    //   _instances.Add(this);
-    // }
-    //
-    // public static void ClearAll()
-    // {
-    //   _instances.Clear();
-    // }
+    public void Save()
+       {
+           MySqlConnection conn = DB.Connection();
+           conn.Open();
 
+           var cmd = conn.CreateCommand() as MySqlCommand;
+           cmd.CommandText = @"INSERT INTO items (description) VALUES (@ItemDescription);";
+
+           MySqlParameter description = new MySqlParameter();
+           description.ParameterName = "@ItemDescription";
+           description.Value = _description;
+           cmd.Parameters.Add(description);
+
+           cmd.ExecuteNonQuery();
+           _id = (int) cmd.LastInsertedId;  // Notice the slight update to this line of code!
+
+            conn.Close();
+            if (conn != null)
+            {
+                conn.Dispose();
+            }
+       }
   }
 }
